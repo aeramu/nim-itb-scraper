@@ -5,11 +5,12 @@ import (
 	"strings"
 )
 
-func extract(c chan user, html string) {
+func extract(c chan *user, html string) {
 	reg := regexp.MustCompile(`placeholder="(.*?)"`)
 	match := reg.FindAllStringSubmatch(html, -1)
 
 	if len(match) < 2 {
+		c <- nil
 		return
 	}
 
@@ -18,7 +19,7 @@ func extract(c chan user, html string) {
 	emailITB := cleanEmail(match[6][1])
 	email := cleanEmail(match[7][1])
 
-	c <- user{
+	c <- &user{
 		Username:   match[1][1],
 		NimTPB:     nimTPB,
 		NimJurusan: nimJurusan,
