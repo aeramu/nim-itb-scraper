@@ -49,7 +49,7 @@ func main() {
 			for i := 0; i < 10; i++ {
 				go sendRequest(resChan, strconv.Itoa(nim)+strconv.Itoa(i))
 			}
-			time.Sleep(time.Second * delay)
+			time.Sleep(time.Second * time.Duration(delay))
 		}
 	}()
 
