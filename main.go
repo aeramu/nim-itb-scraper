@@ -1,15 +1,15 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"regexp"
 	"strconv"
 	"strings"
+	"sync"
+	"time"
 )
 
 var url = "https://ditsti.itb.ac.id/nic/manajemen_akun/pengecekan_user"
@@ -18,6 +18,10 @@ var url = "https://ditsti.itb.ac.id/nic/manajemen_akun/pengecekan_user"
 var session = "hcpn1ljlqvs20sktd3b560uejj1v61d4"
 var nic = "ff2f1058a1f91f384f38f9af83b2bef2"
 var cookie = "ITBnic=" + nic + "; ci_session=" + session
+
+//depends on your internet speed. Less delay, more fast data scraping,
+//but if your internet not good enough, it will crash
+var delay = 5
 
 var code = []string{
 	"160", // FMIPA
@@ -34,26 +38,53 @@ var code = []string{
 	"199", // SAPPK
 }
 
+var w sync.WaitGroup
+
 func main() {
 	//TODO: add iteration to fakultas dan angkatan for range code { for i:= 14->20 {}}
-	for nim := 18119001; nim <= 18119037; nim++ {
-		go exec(nim)
+	resChan := make(chan []byte)
+	go func() {
+		for nim := 1651800; nim <= 1651870; nim++ {
+			fmt.Println(nim)
+			for i := 0; i < 10; i++ {
+				go sendRequest(resChan, strconv.Itoa(nim)+strconv.Itoa(i))
+			}
+			time.Sleep(time.Second * delay)
+		}
+	}()
+
+	//ioutil.WriteFile("out.html", <-res, 0644)
+	userChan := make(chan user)
+	var count int
+	for {
+		select {
+		case res := <-resChan:
+			go extract(userChan, string(res))
+		case user := <-userChan:
+			count++
+			println(count)
+			go fmt.Println(user)
+		}
 	}
-	reader := bufio.NewReader(os.Stdin)
-	reader.ReadString('\n')
-}
 
-func exec(nim int) {
-	body := sendRequest(strconv.Itoa(nim))
-	//ioutil.WriteFile("out.html", body, 0644)
+	// go func() {
+	// 	for res := range resChan {
+	// 		count++
+	// 		println(count)
+	// 		extract(userChan, string(res))
+	// 	}
+	// }()
 
-	extract(string(body))
-
+	// fmt.Println("printing")
+	// for user := range userChan {
+	// 	fmt.Println(user)
+	// }
 	//TODO: write to file or database
-	fmt.Println(nim)
+	// reader := bufio.NewReader(os.Stdin)
+	// reader.ReadString('\n')
 }
 
-func sendRequest(nim string) []byte {
+func sendRequest(c chan<- []byte, nim string) {
 	req, _ := http.NewRequest("POST", url, payload(nim))
 	req.Header.Add("Cookie", cookie)
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
@@ -62,13 +93,12 @@ func sendRequest(nim string) []byte {
 
 	res, err := client.Do(req)
 	if err != nil {
-		panic("client error")
+		panic(err.Error())
 	}
 	defer res.Body.Close()
 
 	body, _ := ioutil.ReadAll(res.Body)
-
-	return body
+	c <- body
 }
 
 func payload(nim string) io.Reader {
@@ -88,16 +118,20 @@ type user struct {
 	Email      string `json:"email"`
 }
 
-func extract(html string) user {
+func extract(c chan user, html string) {
 	reg := regexp.MustCompile(`placeholder="(.*?)"`)
 	match := reg.FindAllStringSubmatch(html, -1)
+
+	if len(match) < 2 {
+		return
+	}
 
 	nimTPB, nimJurusan := cleanNIM(match[2][1])
 	fakultas, jurusan := cleanJurusan(match[5][1])
 	emailITB := cleanEmail(match[6][1])
 	email := cleanEmail(match[7][1])
 
-	return user{
+	c <- user{
 		Username:   match[1][1],
 		NimTPB:     nimTPB,
 		NimJurusan: nimJurusan,
