@@ -47,7 +47,7 @@ func main() {
 			go extract(userChan, string(res))
 		case user := <-userChan:
 			if user == nil {
-				go fmt.Println("fail")
+				go fmt.Println("no user")
 				successChan <- false
 			} else {
 				successChan <- true

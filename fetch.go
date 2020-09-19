@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -15,8 +16,9 @@ func fetch(resChan chan<- []byte, nim string) {
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 	res, err := client.Do(req)
-	if err != nil {
-		panic(err.Error())
+	for err != nil {
+		fmt.Println("trying again... " + nim)
+		res, err = client.Do(req)
 	}
 	defer res.Body.Close()
 
