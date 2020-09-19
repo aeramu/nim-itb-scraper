@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -35,29 +36,69 @@ func main() {
 	ioutil.WriteFile("out.html", body, 0644)
 
 	user := extract(string(body))
-	fmt.Println(user)
+	str, _ := json.Marshal(user)
+	fmt.Println(string(str))
 
 }
-
-var html = `placeholder="(.*?)"`
 
 func payload(nim string) io.Reader {
 	p := "NICitb=" + nic + "&uid=" + nim
 	return strings.NewReader(p)
 }
 
-func extract(html string) model.user {
+type user struct {
+	Username string `json:"username"`
+	NimTPB   string
+	Nim      string
+	Nama     string
+	Status   string
+	Fakultas string
+	Jurusan  string
+	EmailITB string
+	Email    string
+}
+
+func extract(html string) user {
 	reg := regexp.MustCompile(`placeholder="(.*?)"`)
 	match := reg.FindAllStringSubmatch(html, -1)
-	return model.user{
-		username: match[1][1],
-		nimTPB:   match[2][1][:8],
-		nim:      match[2][1][10:],
-		nama:     match[3][1],
-		status:   match[4][1],
-		fakultas: match[5][1],
-		jurusan:  match[5][1],
-		emailITB: match[6][1],
-		email:    match[7][1],
+
+	nimTPB, nim := cleanNIM(match[2][1])
+	fakultas, jurusan := cleanJurusan(match[5][1])
+	emailITB := cleanEmail(match[6][1])
+	email := cleanEmail(match[7][1])
+
+	return user{
+		Username: match[1][1],
+		NimTPB:   nimTPB,
+		Nim:      nim,
+		Nama:     match[3][1],
+		Status:   match[4][1],
+		Fakultas: fakultas,
+		Jurusan:  jurusan,
+		EmailITB: emailITB,
+		Email:    email,
 	}
+}
+
+func cleanNIM(str string) (string, string) {
+	list := strings.Split(str, ",")
+	nimTPB := strings.TrimSpace(list[0])
+	nim := strings.TrimSpace(list[1])
+
+	return nimTPB, nim
+}
+
+func cleanJurusan(str string) (string, string) {
+	list := strings.Split(str, "-")
+	fakultas := strings.TrimSpace(list[0])
+	jurusan := strings.TrimSpace(list[1])
+
+	return fakultas, jurusan
+}
+
+func cleanEmail(email string) string {
+	email = strings.ReplaceAll(email, "(dot)", ".")
+	email = strings.ReplaceAll(email, "(at)", "@")
+
+	return email
 }
