@@ -9,7 +9,7 @@ import (
 var url = "https://ditsti.itb.ac.id/nic/manajemen_akun/pengecekan_user"
 
 //paste your cookie here, (19-09-2020) ci_session and ITBnic)
-var session = "hcpn1ljlqvs20sktd3b560uejj1v61d4"
+var session = "REPLACE_THIS_WITH_YOUR_COPIED_VALUE"
 var nic = "ff2f1058a1f91f384f38f9af83b2bef2"
 var cookie = "ITBnic=" + nic + "; ci_session=" + session
 
