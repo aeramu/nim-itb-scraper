@@ -32,18 +32,6 @@ func extract(c chan *user, html string) {
 	}
 }
 
-type user struct {
-	Username   string `json:"username"`
-	NimTPB     string `json:"nim_tpb"`
-	NimJurusan string `json:"nim_jurusan"`
-	Nama       string `json:"nama"`
-	Status     string `json:"status"`
-	Fakultas   string `json:"fakultas"`
-	Jurusan    string `json:"jurusan"`
-	EmailITB   string `json:"email itb"`
-	Email      string `json:"email"`
-}
-
 func cleanNIM(str string) (string, string) {
 	list := strings.Split(str, ",")
 	nim1 := strings.TrimSpace(list[0])

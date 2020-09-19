@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"strconv"
 )
 
@@ -20,7 +19,6 @@ func manager(successChan chan bool, nimChan chan string) {
 						if !<-successChan {
 							failCount++
 						}
-						fmt.Println(failCount)
 					}
 					if failCount > 5 {
 						fail = true
@@ -33,6 +31,7 @@ func manager(successChan chan bool, nimChan chan string) {
 			}
 		}
 	}
+	close(nimChan)
 }
 
 var code = []string{
