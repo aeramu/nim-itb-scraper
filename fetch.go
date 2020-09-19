@@ -7,12 +7,12 @@ import (
 	"strings"
 )
 
+var client = http.Client{}
+
 func fetch(resChan chan<- []byte, nim string) {
 	req, _ := http.NewRequest("POST", url, payload(nim))
 	req.Header.Add("Cookie", cookie)
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-
-	client := http.Client{}
 
 	res, err := client.Do(req)
 	if err != nil {

@@ -5,7 +5,7 @@ import (
 )
 
 func manager(successChan chan bool, nimChan chan string) {
-	for year := 20; year <= 20; year++ {
+	for year := 16; year <= 20; year++ {
 		for _, faculty := range code {
 			for ratusan := 0; ratusan <= 9; ratusan++ {
 				for puluhan := 0; puluhan <= 9; puluhan++ {
