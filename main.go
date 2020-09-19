@@ -19,7 +19,23 @@ var session = "hcpn1ljlqvs20sktd3b560uejj1v61d4"
 var nic = "ff2f1058a1f91f384f38f9af83b2bef2"
 var cookie = "ITBnic=" + nic + "; ci_session=" + session
 
+var code = []string{
+	"160", // FMIPA
+	"161", // SITH
+	"162", // SF
+	"163", // FITB
+	"164", // FTTM
+	"165", // STEI
+	"166", // FTSL
+	"167", // FTI
+	"168", // FSRD
+	"169", // FTMD
+	"190", // SBM
+	"199", // SAPPK
+}
+
 func main() {
+	//TODO: add iteration to fakultas dan angkatan for range code { for i:= 14->20 {}}
 	for nim := 18119001; nim <= 18119037; nim++ {
 		go exec(nim)
 	}
@@ -32,6 +48,8 @@ func exec(nim int) {
 	//ioutil.WriteFile("out.html", body, 0644)
 
 	extract(string(body))
+
+	//TODO: write to file or database
 	fmt.Println(nim)
 }
 
@@ -42,7 +60,10 @@ func sendRequest(nim string) []byte {
 
 	client := http.Client{}
 
-	res, _ := client.Do(req)
+	res, err := client.Do(req)
+	if err != nil {
+		panic("client error")
+	}
 	defer res.Body.Close()
 
 	body, _ := ioutil.ReadAll(res.Body)
