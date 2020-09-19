@@ -26,8 +26,9 @@ type user struct {
 }
 
 func main() {
-	file, _ := os.OpenFile("itb2020.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0777)
+	file, _ := os.OpenFile("itb2019.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0777)
 	writer := csv.NewWriter(file)
+	writer.Write([]string{"NIM TPB", "NIM Jurusan", "Username", "Nama", "Status", "Fakultas", "Jurusan", "Email ITB", "Email"})
 
 	nimChan := make(chan string)
 	resChan := make(chan []byte)

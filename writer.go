@@ -4,9 +4,9 @@ func (u user) toCSV() []string {
 	var s []string
 	s = append(
 		s,
-		u.Username,
 		u.NimTPB,
 		u.NimJurusan,
+		u.Username,
 		u.Nama,
 		u.Status,
 		u.Fakultas,
