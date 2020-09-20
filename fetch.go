@@ -18,6 +18,7 @@ func fetch(resChan chan<- []byte, nim string) {
 	res, err := client.Do(req)
 	for err != nil {
 		fmt.Println("trying again... " + nim)
+		fmt.Println(err)
 		res, err = client.Do(req)
 	}
 	defer res.Body.Close()

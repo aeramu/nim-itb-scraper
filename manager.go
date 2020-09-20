@@ -40,6 +40,6 @@ var code = []string{
 	"167", // FTI
 	"168", // FSRD
 	"169", // FTMD
-	"190", // SBM
+	"197", // SBM
 	"199", // SAPPK
 }
