@@ -41,20 +41,33 @@ func main() {
 
 	for {
 		select {
-		case nim := <-nimChan:
-			go fetch(resChan, nim)
-		case res := <-resChan:
-			go extract(userChan, string(res))
-		case user := <-userChan:
-			if user == nil {
-				go fmt.Println("no user")
-				successChan <- false
+		case nim, ok := <-nimChan:
+			if ok {
+				go fetch(resChan, nim)
 			} else {
-				successChan <- true
-				fmt.Println(user)
-				writer.Write(user.toCSV())
-				writer.Flush()
+				break
+			}
+		case res, ok := <-resChan:
+			if ok {
+				go extract(userChan, string(res))
+			} else {
+				break
+			}
+		case user, ok := <-userChan:
+			if ok {
+				if user == nil {
+					go fmt.Println("no user")
+					successChan <- false
+				} else {
+					successChan <- true
+					fmt.Println(user)
+					writer.Write(user.toCSV())
+					writer.Flush()
+				}
+			} else {
+				break
 			}
 		}
 	}
+	fmt.Println("Done.")
 }
