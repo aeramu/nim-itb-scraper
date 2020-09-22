@@ -41,5 +41,6 @@ var code = []string{
 	"168", // FSRD
 	"169", // FTMD
 	"197", // SBM
+	"198", // SITH-R
 	"199", // SAPPK
 }
