@@ -7,9 +7,9 @@ import (
 // Scrape data
 func Scrape(facultyCodes []string, startYear int, endYear int) {
 	resultCh := make(chan *user, 50)
+	fetchCount := 0
 	for year := startYear; year <= endYear; year++ {
 		for _, code := range facultyCodes {
-			fetchCount := 0
 			failedCount := 0
 			for i := 1; i <= 999; i++ {
 				nim := fmt.Sprintf("%s%02d%03d", code, year, i)
@@ -36,15 +36,25 @@ func Scrape(facultyCodes []string, startYear int, endYear int) {
 						if fetchCount <= 100-failedCount {
 							deadlock = false
 						}
-						if failedCount == 100 {
+						if failedCount > 50 {
 							deadlock = false
 						}
 					}
 				}
-				if failedCount == 100 {
+				if failedCount > 50 {
 					break
 				}
 			}
 		}
+	}
+	// waiting for all result done
+	for fetchCount > 0 {
+		println(fetchCount)
+		result := <-resultCh
+		if result != nil {
+			fmt.Println(result.NimTPB)
+			save(result)
+		}
+		fetchCount--
 	}
 }
