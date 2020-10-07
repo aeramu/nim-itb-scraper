@@ -5,7 +5,7 @@ import (
 )
 
 //paste your cookie here, (19-09-2020) ci_session and ITBnic
-var session = "REPLACE_THIS_WITH_YOUR_COPIED_VALUE"
+var session = "cje2t3fhssq253e0mqdeifrsrvis0gsd"
 var nic = "ff2f1058a1f91f384f38f9af83b2bef2"
 
 var url = "https://ditsti.itb.ac.id/nic/manajemen_akun/pengecekan_user"
@@ -13,13 +13,15 @@ var url = "https://ditsti.itb.ac.id/nic/manajemen_akun/pengecekan_user"
 var startYear = 17
 var endYear = 20
 
-func main() {
-	pkg.Scrape(faculty, startYear, endYear)
-}
+var filename = "itb.csv"
 
 func init() {
 	pkg.NewFetcher(url, session, nic)
-	pkg.NewWriter("test.csv")
+	pkg.NewWriter(filename)
+}
+
+func main() {
+	pkg.Scrape(faculty, startYear, endYear)
 }
 
 var faculty = []string{

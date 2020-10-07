@@ -7,8 +7,8 @@ import (
 // Scrape data
 func Scrape(facultyCodes []string, startYear int, endYear int) {
 	resultCh := make(chan *user, 50)
-	for _, code := range facultyCodes {
-		for year := startYear; year <= endYear; year++ {
+	for year := startYear; year <= endYear; year++ {
+		for _, code := range facultyCodes {
 			fetchCount := 0
 			failedCount := 0
 			for i := 1; i <= 999; i++ {
@@ -29,7 +29,7 @@ func Scrape(facultyCodes []string, startYear int, endYear int) {
 								failedCount--
 							}
 							fmt.Println(result.NimTPB)
-							go save(result)
+							save(result)
 						}
 						fetchCount--
 					default:

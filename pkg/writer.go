@@ -12,6 +12,7 @@ func NewWriter(filename string) {
 	file, _ := os.OpenFile(filename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0777)
 	writer = csv.NewWriter(file)
 	writer.Write([]string{"NIM TPB", "NIM Jurusan", "Username", "Nama", "Status", "Fakultas", "Jurusan", "Email ITB", "Email"})
+	writer.Flush()
 }
 
 func save(u *user) {
