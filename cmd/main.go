@@ -1,6 +1,9 @@
 package main
 
 import (
+	"encoding/csv"
+	"os"
+
 	"github.com/aeramu/nim-itb-scraper/pkg"
 )
 
@@ -17,11 +20,22 @@ var filename = "itb.csv"
 
 func init() {
 	pkg.NewFetcher(url, session, nic)
-	pkg.NewWriter(filename)
 }
 
 func main() {
-	pkg.Scrape(faculty, startYear, endYear)
+	file, _ := os.OpenFile(filename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0777)
+	writer := csv.NewWriter(file)
+	writer.Write([]string{"NIM TPB", "NIM Jurusan", "Username", "Nama", "Status", "Fakultas", "Jurusan", "Email ITB", "Email"})
+	writer.Flush()
+
+	dataCh := make(chan []string)
+	go pkg.Scrape(faculty, startYear, endYear, dataCh)
+
+	for data := range dataCh {
+		writer.Write(data)
+		writer.Flush()
+	}
+
 }
 
 var faculty = []string{

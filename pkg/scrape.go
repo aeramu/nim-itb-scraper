@@ -5,7 +5,7 @@ import (
 )
 
 // Scrape data
-func Scrape(facultyCodes []string, startYear int, endYear int) {
+func Scrape(facultyCodes []string, startYear int, endYear int, c chan []string) {
 	resultCh := make(chan *user, 50)
 	fetchCount := 0
 	for year := startYear; year <= endYear; year++ {
@@ -29,7 +29,7 @@ func Scrape(facultyCodes []string, startYear int, endYear int) {
 								failedCount--
 							}
 							fmt.Println(result.NimTPB)
-							save(result)
+							c <- result.toCSV()
 						}
 						fetchCount--
 					default:
@@ -53,8 +53,9 @@ func Scrape(facultyCodes []string, startYear int, endYear int) {
 		result := <-resultCh
 		if result != nil {
 			fmt.Println(result.NimTPB)
-			save(result)
+			c <- result.toCSV()
 		}
 		fetchCount--
 	}
+	close(c)
 }

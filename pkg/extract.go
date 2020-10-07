@@ -5,18 +5,6 @@ import (
 	"strings"
 )
 
-type user struct {
-	Username   string `json:"username"`
-	NimTPB     string `json:"nim_tpb"`
-	NimJurusan string `json:"nim_jurusan"`
-	Nama       string `json:"nama"`
-	Status     string `json:"status"`
-	Fakultas   string `json:"fakultas"`
-	Jurusan    string `json:"jurusan"`
-	EmailITB   string `json:"email itb"`
-	Email      string `json:"email"`
-}
-
 func extract(html string, c chan *user) {
 	reg := regexp.MustCompile(`placeholder="(.*?)"`)
 	match := reg.FindAllStringSubmatch(html, -1)
